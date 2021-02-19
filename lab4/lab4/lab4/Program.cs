@@ -1,0 +1,227 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace lab4
+{
+    class SchedulerMacnoton
+    {
+        public SchedulerMacnoton(
+            int _l, // Кол-во задач
+            int _n) // Кол-во процессоров
+        {
+            // Инициализируем массив со временем,
+            // требуемывм на выполнение задач
+            this.TaskTicks = new int[_l];
+
+            // Random Initialization
+            this.random = new Random();
+
+            this.TaskCount = _l;
+            this.ProcCount = _n;
+        }
+
+        int TaskCount; // Кол-во задач
+        int ProcCount; // Кол-во процессоров 
+
+        int[] TaskTicks;
+        Random random;
+
+        public void work()
+        {
+            // Инициализируем задачи
+            for (int i = 0; i < this.TaskCount; ++i)
+            {
+                // Сколько тактов будет решаться задача
+                TaskTicks[i] = random.Next(1, 12);
+            }
+
+            // Сортируем задачи по возрастанию
+            Array.Sort(TaskTicks);
+            // Сортируем задачи по убыванию
+            Array.Reverse(TaskTicks);
+
+            // Вычислим нижнюю границу времени для выполнения алгоритма Маккнотона
+            double theta = Math.Max(TaskTicks[0], middleOfSum(TaskTicks, ProcCount));
+
+            // Время простоя процессора
+            double wasteTime1 = AlgorithmMaknoton(TaskTicks, theta, ProcCount);
+
+            Console.WriteLine("Простой процессора - {0:0.0000}\nОптимальное время(нижняя граница) - {1:0.0000}", wasteTime1, theta);
+        }
+
+        // Алгоритм Маккнотона
+        public double AlgorithmMaknoton(int[] ticks, double thetaLevel, int n)
+        {
+            // Время кванта процессорного времени
+            // Сколько тактов тратит процессор на одну задачу
+            double temp = thetaLevel;
+
+            int currentProcessor = n;
+            for (int i = 0; i < ticks.Length; ++i)
+            {
+                // Не вместившееся на процессор задание
+                // Переходит на следующий процессор
+                if (temp <= 0 && currentProcessor > 1)
+                {
+                    temp += thetaLevel;
+                    --currentProcessor;
+                }
+                // Выполняется задача
+                // т.е. уделяем задаче время
+                temp -= ticks[i];
+            }
+            return temp;
+        }
+
+        // Вычисляет приблизительное кол-во тактов на один процессор
+        public double middleOfSum(int[] arr, int quantatityProcs)
+        {
+            int sum = 0;
+            for (int i = 0; i < arr.Length; ++i)
+            {
+                sum += arr[i];
+            }
+            return (double)(sum / (double)quantatityProcs);
+        }
+
+        // Выводим все задачи
+        public void Print(int[] ticks)
+        {
+            for (int i = 0; i < ticks.Length; ++i)
+            {
+                Console.WriteLine("Задача <" + i + "> Требуется для выполнения: <" + ticks[i] + ">");
+            }
+        }
+    }
+
+    class SchedulerLPT
+    {
+        public SchedulerLPT(
+            int _l, // Кол-во задач
+            int _n) // Кол-во процессоров
+        {
+            this.TaskCount = _l;
+            this.ProcCount = _n;
+            this.TaskAnyTick = 4;
+        }
+
+        int ProcCount; // Кол-во процессоров
+        int TaskCount; // Кол-во задач
+        int TaskAnyTick; // Время в тактах уделяемое каждой задаче
+
+        public void work()
+        {
+            //массив процессоров
+            List<int> Processors = new List<int>();
+            //массив заданий
+            int[] works = new int[this.TaskCount];
+
+            // Заполняем массив заданий в процессор
+            for (int i = 0; i < this.ProcCount; i++)
+            {
+                Processors.Add(0);
+            }
+
+            // Заполняем массив процессоров, где между всеми
+            // процессорами делятся все задания с рандомным уровнем сложности
+            for (int i = 0; i < this.ProcCount; i++)
+            {
+                works[i] = new Random().Next(1, this.TaskCount);
+            }
+
+            // Сортируем задачи по возрастанию
+            Array.Sort(works);
+            // Сортируем задачи по убыванию
+            Array.Reverse(works);
+
+            // Отсортированная очередь заданий
+            Queue<int> pack = new Queue<int>();
+
+            // Заролняем очередь заданий
+            foreach (int work in works)
+            {
+                pack.Enqueue(work);
+            }
+
+            // Количество тактов
+            int ticks = 0;
+
+            // Вычислим нижнюю границу времени
+            double theta = Math.Max(works[0], middleOfSum(works, this.ProcCount));
+            // Вычисляем простой процессора
+            double idleProcessor = this.idleWork(works, TaskCount, ProcCount);
+
+            do
+            {
+                // Перебирает все процессоры
+                for (int i = 0; i < Processors.Count(); i++)
+                {
+                    Processors[i] -= this.TaskAnyTick;
+
+                    // Если задача выполнена, берёт следующую
+                    if (Processors[i] <= 0)
+                    {
+                        // Сверяет оставшиеся задачи и переносит выполненую задачу в конец списка 
+                        if (pack.Count > 0)
+                        {
+                            Processors[i] = pack.Dequeue();
+                        }
+                    }
+                    ticks++;
+                }
+            }
+            // проверяет все ли процессоры выполнили всю работу
+            while (CheckProcessors(Processors));
+
+            Console.WriteLine("Простой процессора - {0:0.0000}\nОптимальное время(нижняя граница) - {1:0.0000}", idleProcessor, theta);
+            Console.ReadKey();
+        }
+
+        // Вычисляет приблизительное кол-во тактов на один процессор
+        public double middleOfSum(int[] arr, int quantatityProcs)
+        {
+            int sum = 0;
+            for (int i = 0; i < arr.Length; ++i)
+            {
+                sum += arr[i];
+            }
+            return (double)(sum / (double)quantatityProcs);
+        }
+
+        public double idleWork(int[] tasks, int taskCount, int procCount)
+        {
+            double T0 = 0;
+            for (int curTask = 0; curTask < taskCount; curTask++)
+            {
+                T0 += tasks[curTask];
+            }
+            return T0 * (1 / procCount);
+        }
+
+        // Проверка на занятые процессоры
+        bool CheckProcessors(List<int> processors)
+        {
+            foreach (int proc in processors) if (proc > 0) return true;
+            return false;
+        }
+    }
+
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Console.WriteLine("Алгоритм Макнотона...");
+            SchedulerMacnoton schedulerMacnoton = new SchedulerMacnoton(14, 4);
+            schedulerMacnoton.work();
+
+            Console.WriteLine("\nАлгоритм LPT...");
+            SchedulerLPT schedulerLPT = new SchedulerLPT(14, 4);
+            schedulerLPT.work();
+
+            Console.ReadKey();
+        }
+    }
+}

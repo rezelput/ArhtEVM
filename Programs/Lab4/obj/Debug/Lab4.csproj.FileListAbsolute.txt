@@ -1,0 +1,7 @@
+C:\Users\Lime\Desktop\Учёба 2020-2021\Архитектура ЭВМ и систем\Programs\Lab4\bin\Debug\Lab4.exe.config
+C:\Users\Lime\Desktop\Учёба 2020-2021\Архитектура ЭВМ и систем\Programs\Lab4\bin\Debug\Lab4.exe
+C:\Users\Lime\Desktop\Учёба 2020-2021\Архитектура ЭВМ и систем\Programs\Lab4\bin\Debug\Lab4.pdb
+C:\Users\Lime\Desktop\Учёба 2020-2021\Архитектура ЭВМ и систем\Programs\Lab4\obj\Debug\Lab4.csprojAssemblyReference.cache
+C:\Users\Lime\Desktop\Учёба 2020-2021\Архитектура ЭВМ и систем\Programs\Lab4\obj\Debug\Lab4.csproj.CoreCompileInputs.cache
+C:\Users\Lime\Desktop\Учёба 2020-2021\Архитектура ЭВМ и систем\Programs\Lab4\obj\Debug\Lab4.exe
+C:\Users\Lime\Desktop\Учёба 2020-2021\Архитектура ЭВМ и систем\Programs\Lab4\obj\Debug\Lab4.pdb

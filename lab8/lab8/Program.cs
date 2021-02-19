@@ -1,0 +1,179 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading;
+
+namespace lab8
+{
+    class Station
+    {
+        public Station(int id, int packetCount)
+        {
+            this.id = id; // номер текущей станции 
+            this.packetCount = packetCount; // пакеты данных текущей станции
+        }
+        public int packetCount; // оставшиеся пакеты для передачи
+        public int nextTime; // время для следующей попытки передачи данных
+        public int id; // номер станции передающей пакет
+    }
+
+
+    class Aloha
+    {
+        public void MDPN(int stationCount, int stationPacketCount, int stationPacketIntensity)
+        {
+            Random random = new Random(); // Генератор случайных чисел
+            int globalTicks = 0;  // Затраченное время
+            int globalСollision = 0; // Кол-во коллизий
+
+            Station[] stations = new Station[stationCount];
+            for (int _curStation = 0; _curStation < stationCount; _curStation++)
+            {
+                // Создание станций и педедача им начальных значений
+                stations[_curStation] = new Station(_curStation, stationPacketCount);
+                stations[_curStation].nextTime = random.Next(1, 1000 / stationPacketIntensity);
+            }
+
+            // Станции передают между собой данные пока не передались все пакеты
+            while (!AllPacketsSended(stations))
+            {
+                Station LocalStation; // Текущая обрабатываемая станция
+                int stationReadyToSendCount = GetNumberStationsReadyToSend(stations, out LocalStation); // Получить станцию, готовую к пересылке
+
+                if (stationReadyToSendCount == 1)
+                // если пакет данных был передан нужной станции без коллизий
+                {
+                    // Проходит такт времени
+                    DecrementAllTimes(stations, ref globalTicks);
+                    LocalStation.nextTime = 0; // обнуляем время передачи пакета так как он был передан
+                    LocalStation.packetCount--; // станция передаёт пакет
+                }
+                else if (stationReadyToSendCount > 1)
+                // Если передача данных идет с коллизией
+                // LocalStation = null
+                {
+                    int stationID = GetNumberStationWithСollision(stations);
+                    stations[stationID].nextTime += random.Next(1, 1000 / stationPacketIntensity);
+                    //Console.WriteLine("Collision! ID <{0}>", stationID);
+                    for (int i = 0; i < stations.Count(); i++)
+                    {
+                        //Console.WriteLine("----- ALL TABLE: ID <{0}>, nextTime: <{1}>", i, stations[i].nextTime);
+                    }
+                    globalСollision++;
+                }
+                else if (stationReadyToSendCount == 0)
+                // Если не было коллизий
+                // LocalStation = null
+                {
+                    // Здесь может получиться так, что два хоста отправят в
+                    // следующий такт времени пакет одновременно. Нужно этого
+                    // избегать проверкой разрешения на отправку
+                    DecrementAllTimes(stations, ref globalTicks);
+                }
+            }
+
+            Console.WriteLine("\nАлгоритм \"МДПН/ОС\" успешно завершил работу!");
+            Console.WriteLine("Общее время работы алгоритма \"МДПН/ОС\": {0} ms.", globalTicks);
+            Console.WriteLine("Общее количество отправленных пакетов алгоритма \"МДПН/ОС\": {0} шт.", (stationPacketCount * stationCount));
+            Console.WriteLine("Общее число коллизий алгоритма \"МДПН/ОС\": {0} шт.", globalСollision);
+        }
+
+
+        private bool AllPacketsSended(Station[] stations)
+        /* проверка все ли пакеты от всех станций передались */
+        {
+            foreach (Station _curStation in stations)
+            {
+                if (_curStation.packetCount != 0)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+
+        private int GetNumberStationsReadyToSend(Station[] stations, out Station st)
+        {
+            st = null;
+            int count = 0;
+            foreach (Station s in stations)
+            {
+                if (s.nextTime <= 0 && s.packetCount > 0)
+                //  если не успели передать все за определенное время
+                {
+                    count++; // считает сколько станций передало пакетов за текущий промежуток времени 
+                    st = s; // запоминает новые данные
+                }
+            }
+            if (count != 1) st = null; // произошла коллизия
+            return count;
+        }
+
+
+        private int GetNumberStationWithСollision(Station[] stations)
+        {
+            for (int i = 0; i < stations.Count(); i++)
+            // пока не будет передан пакет этой станции
+            {
+                if (stations[i].nextTime <= 0)
+                // если отведенное время для передачи пакета этой станцией вышло
+                {
+                    return stations[i].id;
+                }
+            }
+            return 0;
+        }
+
+
+        private void DecrementAllTimes(Station[] stations, ref int globalTicks)
+        {
+            globalTicks += 1;
+
+            bool AccessToTransmit = true;
+
+            for (int i = 0; i < stations.Count(); i++)
+            {
+                if (stations[i].nextTime <= 0 && stations[i].packetCount > 0)
+                {
+                    AccessToTransmit = false;
+                }
+            }
+
+            for (int i = 0; i < stations.Count(); i++)
+            {
+                if (AccessToTransmit && stations[i].packetCount > 0)
+                {
+                    stations[i].nextTime -= 1;
+                    if (stations[i].nextTime <= 0 && stations[i].packetCount > 0)
+                    {
+                        AccessToTransmit = false;
+                    }
+                }
+            }
+        }
+    }
+
+
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            int stationCount = 5; // Количество станций
+            int stationPacketCount = 4; // Количество отправляемых пакетов
+            int stationPacketIntensity = 70; // Количество пакетов в секунду
+
+            Aloha aloha = new Aloha();
+
+            Console.WriteLine("Входные данные:" +
+                "\nКоличество станций: {0} шт." +
+                "\nКоличество отправляемых пакетов: {1} шт." +
+                "\nИнтенсивность отправки пакетов: {2} пакетов/секунду\n",
+                stationCount, stationPacketCount, stationPacketIntensity);
+
+            aloha.MDPN(stationCount, stationPacketCount, stationPacketIntensity);
+            Console.ReadKey();
+        }
+    }
+}

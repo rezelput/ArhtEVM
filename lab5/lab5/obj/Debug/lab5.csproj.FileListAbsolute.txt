@@ -1,0 +1,7 @@
+B:\кубгту 2 курс\Архитектура ЭВМ\lab5\lab5\bin\Debug\lab5.exe.config
+B:\кубгту 2 курс\Архитектура ЭВМ\lab5\lab5\bin\Debug\lab5.exe
+B:\кубгту 2 курс\Архитектура ЭВМ\lab5\lab5\bin\Debug\lab5.pdb
+B:\кубгту 2 курс\Архитектура ЭВМ\lab5\lab5\obj\Debug\lab5.csprojAssemblyReference.cache
+B:\кубгту 2 курс\Архитектура ЭВМ\lab5\lab5\obj\Debug\lab5.csproj.CoreCompileInputs.cache
+B:\кубгту 2 курс\Архитектура ЭВМ\lab5\lab5\obj\Debug\lab5.exe
+B:\кубгту 2 курс\Архитектура ЭВМ\lab5\lab5\obj\Debug\lab5.pdb

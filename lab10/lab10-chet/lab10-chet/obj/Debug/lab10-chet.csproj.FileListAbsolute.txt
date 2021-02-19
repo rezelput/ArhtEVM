@@ -1,0 +1,7 @@
+B:\кубгту 2 курс\Архитектура ЭВМ\lab10\lab10-chet\lab10-chet\bin\Debug\lab10-chet.exe.config
+B:\кубгту 2 курс\Архитектура ЭВМ\lab10\lab10-chet\lab10-chet\bin\Debug\lab10-chet.exe
+B:\кубгту 2 курс\Архитектура ЭВМ\lab10\lab10-chet\lab10-chet\bin\Debug\lab10-chet.pdb
+B:\кубгту 2 курс\Архитектура ЭВМ\lab10\lab10-chet\lab10-chet\obj\Debug\lab10-chet.csprojAssemblyReference.cache
+B:\кубгту 2 курс\Архитектура ЭВМ\lab10\lab10-chet\lab10-chet\obj\Debug\lab10-chet.csproj.CoreCompileInputs.cache
+B:\кубгту 2 курс\Архитектура ЭВМ\lab10\lab10-chet\lab10-chet\obj\Debug\lab10-chet.exe
+B:\кубгту 2 курс\Архитектура ЭВМ\lab10\lab10-chet\lab10-chet\obj\Debug\lab10-chet.pdb
